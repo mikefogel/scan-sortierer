@@ -1,0 +1,13 @@
+{
+  "name": "Versicherung",
+  "dateiname": "{datum}_{absender}_{typ}",
+  "ablage": "flach",
+  "felder": [
+    { "name": "absender", "bezeichnung": "Absender", "typ": "auswahl", "pflicht": true, "imDateinamen": true },
+    { "name": "datum", "bezeichnung": "Briefdatum", "typ": "datum", "pflicht": true, "imDateinamen": true },
+    { "name": "versicherungsnummer", "bezeichnung": "Versicherungsnummer", "typ": "text", "pflicht": false, "imDateinamen": false,
+      "schluesselwoerter": ["Versicherungsnummer", "Versicherungsschein-Nr.", "Versicherungsschein", "Versichertennummer", "Vertragsnummer"] },
+    { "name": "beitrag", "bezeichnung": "Beitrag", "typ": "betrag", "pflicht": false, "imDateinamen": false,
+      "schluesselwoerter": ["Beitrag", "Jahresbeitrag", "Monatsbeitrag"] }
+  ]
+}

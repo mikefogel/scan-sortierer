@@ -1,0 +1,168 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  # Deutsche Sprachdaten für Tesseract (fest auf Version und Prüfsumme)
+  TESSDATA_URL: https://github.com/tesseract-ocr/tessdata/raw/4.1.0/deu.traineddata
+  TESSDATA_SHA256: 896b3b4956503ab9daa10285db330881b2d74b70d889b79262cc534b9ec699a4
+  # Tesseract für Windows (UB Mannheim)
+  TESSERACT_WIN_URL: https://github.com/UB-Mannheim/tesseract/releases/download/v5.4.0.20240606/tesseract-ocr-w64-setup-5.4.0.20240606.exe
+  TESSERACT_WIN_SHA256: c885fff6998e0608ba4bb8ab51436e1c6775c2bafc2559a19b423e18678b60c9
+
+jobs:
+  linux:
+    name: Linux (Test und Paket)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Version bestimmen
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then V="${GITHUB_REF_NAME#v}"; else V="0.0.${GITHUB_RUN_NUMBER}"; fi
+          echo "VERSION=$V" >> "$GITHUB_ENV"
+
+      - name: Tesseract und Sprachdaten
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends tesseract-ocr poppler-utils
+          mkdir -p "$RUNNER_TEMP/tessdata"
+          curl -sSfL -o "$RUNNER_TEMP/tessdata/deu.traineddata" "$TESSDATA_URL"
+          echo "$TESSDATA_SHA256  $RUNNER_TEMP/tessdata/deu.traineddata" | sha256sum -c -
+
+      - name: Tests
+        run: dotnet test --configuration Release
+        env:
+          TESSDATA_PREFIX: ${{ runner.temp }}/tessdata
+          SS_SCREENSHOTS: ${{ runner.temp }}/screenshots
+
+      - name: Bildschirmfotos der Oberflächentests
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: bildschirmfotos
+          path: ${{ runner.temp }}/screenshots
+          if-no-files-found: ignore
+
+      - name: Veröffentlichen
+        run: |
+          dotnet publish src/ScanSortierer -c Release -r linux-x64 --self-contained \
+            -p:Version="$VERSION" -o dist/ScanSortierer
+          python3 tools/paket/tesseract_buendeln.py linux \
+            --tessdata "$RUNNER_TEMP/tessdata/deu.traineddata" --ziel dist/ScanSortierer/tesseract
+          cp tools/paket/linux/* tools/paket/LIESMICH.txt dist/ScanSortierer/
+
+      - name: Selbsttest (Ubuntu)
+        run: dist/ScanSortierer/ScanSortierer --selbsttest "tests/Beispielscans/Scan 001.pdf" --erwarte Rechnungsbetrag
+
+      - name: Selbsttest in sauberem Fedora ohne Tesseract
+        run: |
+          docker run --rm -e DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 \
+            -v "$PWD/dist/ScanSortierer:/app:ro" -v "$PWD/tests/Beispielscans:/scans:ro" \
+            fedora:43 /app/ScanSortierer --selbsttest "/scans/Scan 001.pdf" --erwarte Rechnungsbetrag
+
+      - name: Archiv
+        run: tar -czf "ScanSortierer-$VERSION-linux-x64.tar.gz" -C dist ScanSortierer
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: linux-x64
+          path: ScanSortierer-*-linux-x64.tar.gz
+
+  windows:
+    name: Windows (Test und Paket)
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Version bestimmen
+        run: |
+          $v = if ($env:GITHUB_REF -like 'refs/tags/v*') { $env:GITHUB_REF_NAME.Substring(1) } else { "0.0.$env:GITHUB_RUN_NUMBER" }
+          "VERSION=$v" >> $env:GITHUB_ENV
+
+      - name: Tests
+        run: dotnet test --configuration Release
+
+      - name: Tesseract und Sprachdaten laden
+        run: |
+          New-Item -ItemType Directory -Force "$env:RUNNER_TEMP\tess" | Out-Null
+          Invoke-WebRequest $env:TESSERACT_WIN_URL -OutFile "$env:RUNNER_TEMP\tess\setup.exe"
+          Invoke-WebRequest $env:TESSDATA_URL -OutFile "$env:RUNNER_TEMP\tess\deu.traineddata"
+          if ((Get-FileHash "$env:RUNNER_TEMP\tess\setup.exe" -Algorithm SHA256).Hash -ne $env:TESSERACT_WIN_SHA256) { throw "Prüfsumme Tesseract-Installer falsch" }
+          if ((Get-FileHash "$env:RUNNER_TEMP\tess\deu.traineddata" -Algorithm SHA256).Hash -ne $env:TESSDATA_SHA256) { throw "Prüfsumme Sprachdaten falsch" }
+
+      - name: Veröffentlichen
+        run: |
+          dotnet publish src/ScanSortierer -c Release -r win-x64 --self-contained `
+            -p:Version="$env:VERSION" -o dist/ScanSortierer
+          python tools/paket/tesseract_buendeln.py windows --installer "$env:RUNNER_TEMP\tess\setup.exe" `
+            --tessdata "$env:RUNNER_TEMP\tess\deu.traineddata" --ziel dist/ScanSortierer/tesseract
+          Copy-Item tools/paket/LIESMICH.txt dist/ScanSortierer/
+
+      - name: Selbsttest
+        run: |
+          $p = Start-Process -FilePath dist/ScanSortierer/ScanSortierer.exe -Wait -PassThru -NoNewWindow `
+            -ArgumentList '--selbsttest', '"tests/Beispielscans/Scan 001.pdf"', '--erwarte', 'Rechnungsbetrag', '--bericht', 'selbsttest.txt'
+          Get-Content selbsttest.txt
+          if ($p.ExitCode -ne 0) { throw "Selbsttest fehlgeschlagen ($($p.ExitCode))" }
+
+      - name: Archiv
+        run: Compress-Archive -Path dist/ScanSortierer -DestinationPath "ScanSortierer-$env:VERSION-win-x64.zip"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: win-x64
+          path: ScanSortierer-*-win-x64.zip
+
+  release:
+    name: Release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [linux, windows]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          path: pakete
+          merge-multiple: true
+
+      - name: Prüfsummen
+        working-directory: pakete
+        run: sha256sum * > SHA256SUMS.txt
+
+      - name: GitHub-Release anlegen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" pakete/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "Scan-Sortierer ${GITHUB_REF_NAME#v}" \
+            --notes "Eigenständige Pakete inkl. Tesseract und deutscher Sprachdaten, keine Zusatzinstallation nötig.
+
+          - **Windows:** \`ScanSortierer-*-win-x64.zip\` entpacken, \`ScanSortierer.exe\` starten.
+          - **Linux (z. B. Fedora):** \`tar xzf ScanSortierer-*-linux-x64.tar.gz\`, dann \`./ScanSortierer/ScanSortierer\` starten; \`./ScanSortierer/installieren.sh\` legt einen Startmenü-Eintrag an.
+
+          Beim ersten Start ist der Testbetrieb eingeschaltet (Originale werden nie verschoben)." \
+            --generate-notes

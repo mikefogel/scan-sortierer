@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="PDFsharp" />
+    <PackageReference Include="bblanchon.PDFium.Linux" />
+    <PackageReference Include="bblanchon.PDFium.Win32" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Beispielvorlagen\*.json" LogicalName="Beispielvorlagen.%(Filename)%(Extension)" />
+  </ItemGroup>
+</Project>

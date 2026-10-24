@@ -1,0 +1,11 @@
+{
+  "name": "Brief",
+  "dateiname": "{datum}_{absender}_{betreff}",
+  "ablage": "flach",
+  "felder": [
+    { "name": "absender", "bezeichnung": "Absender", "typ": "auswahl", "pflicht": true, "imDateinamen": true },
+    { "name": "datum", "bezeichnung": "Briefdatum", "typ": "datum", "pflicht": true, "imDateinamen": true },
+    { "name": "betreff", "bezeichnung": "Betreff", "typ": "text", "pflicht": false, "imDateinamen": true,
+      "schluesselwoerter": ["Betreff", "Betr."] }
+  ]
+}

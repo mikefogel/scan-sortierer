@@ -1,0 +1,130 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:ScanSortierer.ViewModels"
+        x:Class="ScanSortierer.Views.EinstellungenFenster"
+        x:DataType="vm:EinstellungenViewModel"
+        Title="Scan-Sortierer · Einstellungen"
+        Icon="avares://ScanSortierer/Assets/scan-sortierer.ico"
+        Width="1100" Height="760" MinWidth="800" MinHeight="520" WindowStartupLocation="CenterOwner">
+  <Grid RowDefinitions="*,Auto">
+    <Grid ColumnDefinitions="230,*">
+      <Border Background="{StaticResource PinselPanel}" BorderBrush="{StaticResource PinselRahmen}" BorderThickness="0,0,1,0">
+        <StackPanel Margin="10,14">
+          <TextBlock Classes="kopf" Text="EINSTELLUNGEN" Margin="2,0,0,8" />
+          <ListBox Classes="navigation" SelectedIndex="{Binding Bereich}">
+            <ListBoxItem>Allgemein</ListBoxItem>
+            <ListBoxItem>Absender</ListBoxItem>
+            <ListBoxItem>Protokoll</ListBoxItem>
+            <ListBoxItem>Über</ListBoxItem>
+          </ListBox>
+        </StackPanel>
+      </Border>
+
+      <ScrollViewer Grid.Column="1">
+        <Grid Margin="36,24,36,24" MaxWidth="820" HorizontalAlignment="Left">
+
+          <!-- Allgemein -->
+          <StackPanel Spacing="14" IsVisible="{Binding ZeigeAllgemein}">
+            <TextBlock Classes="titel" Text="Ordner" />
+            <StackPanel>
+              <TextBlock Classes="label" Text="Eingangsordner" />
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBox Text="{Binding Eingangsordner}" />
+                <Button Grid.Column="1" Content="Wählen …" Margin="8,0,0,0" Command="{Binding EingangWaehlenCommand}" />
+              </Grid>
+            </StackPanel>
+            <StackPanel>
+              <TextBlock Classes="label" Text="Zielordner für fertige Dokumente" />
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBox Text="{Binding Zielordner}" />
+                <Button Grid.Column="1" Content="Wählen …" Margin="8,0,0,0" Command="{Binding ZielWaehlenCommand}" />
+              </Grid>
+            </StackPanel>
+            <StackPanel>
+              <TextBlock Classes="label" Text="Ordner für erledigte Originale" />
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBox Text="{Binding ErledigtOrdner}" PlaceholderText="{Binding ErledigtPlatzhalter}" />
+                <Button Grid.Column="1" Content="Wählen …" Margin="8,0,0,0" Command="{Binding ErledigtWaehlenCommand}" />
+              </Grid>
+            </StackPanel>
+
+            <TextBlock Classes="titel" Text="Testbetrieb" Margin="0,10,0,0" />
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <ToggleSwitch IsChecked="{Binding Testbetrieb}" OnContent="" OffContent="" />
+              <TextBlock Text="{Binding TestbetriebText}" TextWrapping="Wrap" VerticalAlignment="Center" MaxWidth="680" />
+            </StackPanel>
+
+            <TextBlock Classes="titel" Text="Sonstiges" Margin="0,10,0,0" />
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <ToggleSwitch IsChecked="{Binding OcrTextebene}" OnContent="" OffContent="" />
+              <TextBlock Text="OCR-Text als unsichtbare Textebene in die PDF einbetten (durchsuchbar)" VerticalAlignment="Center" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <ToggleSwitch IsChecked="{Binding LeereSeitenVorschlagen}" OnContent="" OffContent="" />
+              <TextBlock Text="Leere Rückseiten automatisch zum Löschen vorschlagen" VerticalAlignment="Center" />
+            </StackPanel>
+          </StackPanel>
+
+          <!-- Absender -->
+          <StackPanel Spacing="12" IsVisible="{Binding ZeigeAbsender}">
+            <TextBlock Classes="titel" Text="Absender merken" />
+            <TextBlock Classes="leise" TextWrapping="Wrap"
+                       Text="Links steht der Name, wie er im Dateinamen erscheint. Rechts weitere Schreibweisen (durch Semikolon getrennt), die auf diesen Namen abgebildet werden – z. B. „Telekom Deutschland GmbH; Deutsche Telekom AG“ → „Telekom“." />
+            <Border Classes="karte" Padding="14,8">
+              <ItemsControl ItemsSource="{Binding Absender}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="vm:AbsenderZeile">
+                    <Grid ColumnDefinitions="200,*,Auto" Margin="0,5">
+                      <TextBox Text="{Binding Name}" PlaceholderText="Name" />
+                      <TextBox Grid.Column="1" Text="{Binding Schreibweisen}" PlaceholderText="Schreibweisen; durch Semikolon getrennt" Margin="10,0" />
+                      <Button Grid.Column="2" Content="Entfernen"
+                              Command="{Binding $parent[ItemsControl].((vm:EinstellungenViewModel)DataContext).AbsenderEntfernenCommand}" CommandParameter="{Binding}" />
+                    </Grid>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </Border>
+            <Button Content="+ Absender hinzufügen" Command="{Binding AbsenderHinzufuegenCommand}" />
+          </StackPanel>
+
+          <!-- Protokoll -->
+          <DockPanel IsVisible="{Binding ZeigeProtokoll}">
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="10" Margin="0,0,0,12">
+              <TextBlock Classes="titel" Text="Protokoll" VerticalAlignment="Center" />
+              <Button Content="In Editor öffnen" Command="{Binding ProtokollOeffnenCommand}" />
+            </StackPanel>
+            <TextBox Classes="code" Text="{Binding Protokoll, Mode=OneWay}" IsReadOnly="True" TextWrapping="NoWrap" AcceptsReturn="True" Height="520" />
+          </DockPanel>
+
+          <!-- Über -->
+          <StackPanel Spacing="10" IsVisible="{Binding ZeigeUeber}">
+            <TextBlock Classes="titel" Text="{Binding Version}" />
+            <TextBlock Text="Sortiert gescannte Briefe: trennen, per lokaler Texterkennung Metadaten vorbelegen, als PDF mit Metadaten ablegen." TextWrapping="Wrap" />
+            <TextBlock Classes="label" Text="Texterkennung" Margin="0,8,0,0" />
+            <SelectableTextBlock Text="{Binding OcrStatus}" TextWrapping="Wrap" />
+            <TextBlock Classes="label" Text="Konfigurationsordner" Margin="0,8,0,0" />
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <SelectableTextBlock Text="{Binding Konfigurationsordner}" VerticalAlignment="Center" />
+              <Button Content="Öffnen" Command="{Binding OrdnerOeffnenCommand}" />
+            </StackPanel>
+            <TextBlock Classes="leise" TextWrapping="Wrap" Margin="0,12,0,0"
+                       Text="Verwendet: Avalonia UI (MIT), PDFsharp (MIT), PDFium (BSD/Apache 2.0), Tesseract OCR (Apache 2.0). Alle Daten bleiben auf diesem Rechner." />
+          </StackPanel>
+        </Grid>
+      </ScrollViewer>
+    </Grid>
+
+    <Border Grid.Row="1" Background="{StaticResource PinselLeiste}" BorderBrush="{StaticResource PinselRahmen}" BorderThickness="0,1,0,0" Padding="14,10">
+      <Grid ColumnDefinitions="*,Auto">
+        <StackPanel VerticalAlignment="Center">
+          <TextBlock Classes="fehler" Text="{Binding Fehler}" IsVisible="{Binding Fehler, Converter={x:Static ObjectConverters.IsNotNull}}" TextWrapping="Wrap" />
+          <TextBlock Classes="leise" Text="{Binding Konfigurationsordner, StringFormat='Konfiguration: {0}'}" />
+        </StackPanel>
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
+          <Button Content="Abbrechen" Command="{Binding AbbrechenCommand}" />
+          <Button Classes="primaer" Content="Speichern" Command="{Binding SpeichernCommand}" />
+        </StackPanel>
+      </Grid>
+    </Border>
+  </Grid>
+</Window>

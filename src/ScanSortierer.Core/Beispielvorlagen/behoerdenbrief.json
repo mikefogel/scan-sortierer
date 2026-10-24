@@ -1,0 +1,14 @@
+{
+  "name": "Behördenbrief",
+  "dateiname": "{datum}_{absender}_{betreff}",
+  "ablage": "flach",
+  "felder": [
+    { "name": "absender", "bezeichnung": "Behörde", "typ": "auswahl", "pflicht": true, "imDateinamen": true,
+      "werte": ["Finanzamt", "Stadtverwaltung", "Landratsamt", "Agentur für Arbeit", "Deutsche Rentenversicherung"] },
+    { "name": "datum", "bezeichnung": "Briefdatum", "typ": "datum", "pflicht": true, "imDateinamen": true },
+    { "name": "aktenzeichen", "bezeichnung": "Aktenzeichen", "typ": "text", "pflicht": false, "imDateinamen": false,
+      "schluesselwoerter": ["Aktenzeichen", "Az.", "Geschäftszeichen", "Steuernummer", "Unser Zeichen"] },
+    { "name": "betreff", "bezeichnung": "Betreff", "typ": "text", "pflicht": false, "imDateinamen": true,
+      "schluesselwoerter": ["Betreff", "Betr."] }
+  ]
+}

@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ScanSortierer.Core/ScanSortierer.Core.csproj" />
+    <Project Path="src/ScanSortierer/ScanSortierer.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ScanSortierer.Tests/ScanSortierer.Tests.csproj" />
+  </Folder>
+</Solution>

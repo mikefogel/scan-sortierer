@@ -1,0 +1,14 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="ScanSortierer.Views.DialogFenster"
+        Width="480" SizeToContent="Height" CanResize="False"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+  <StackPanel Margin="22,20" Spacing="18">
+    <TextBlock x:Name="TitelText" Classes="titel" />
+    <SelectableTextBlock x:Name="InhaltText" TextWrapping="Wrap" />
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+      <Button x:Name="NeinKnopf" Click="NeinKlick" IsCancel="True" />
+      <Button x:Name="JaKnopf" Classes="primaer" Click="JaKlick" IsDefault="True" />
+    </StackPanel>
+  </StackPanel>
+</Window>

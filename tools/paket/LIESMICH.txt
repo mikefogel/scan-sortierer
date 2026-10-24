@@ -1,0 +1,18 @@
+Scan-Sortierer
+==============
+
+Gescannte Briefe trennen, per lokaler Texterkennung (Tesseract) Felder vorbelegen,
+als PDF mit Metadaten und sinnvollem Dateinamen ablegen. Alles bleibt auf diesem Rechner.
+
+Start
+-----
+Windows: ScanSortierer.exe starten.
+Linux:   ./ScanSortierer starten. Für einen Startmenü-Eintrag einmal ./installieren.sh ausführen.
+
+Beim ersten Start wird im Benutzerordner der Ordner „.scan-sortierer“ angelegt
+(Einstellungen, Vorlagen, gemerkte Absender, Protokoll). Der Programmordner wird nie beschrieben.
+
+Der Testbetrieb ist beim ersten Start eingeschaltet: Originale werden dann nie verschoben.
+Umschalten unter Einstellungen → Allgemein.
+
+Mitgeliefert: Tesseract OCR mit deutschen Sprachdaten (Apache 2.0, Ordner „tesseract“).

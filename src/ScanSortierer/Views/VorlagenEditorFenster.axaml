@@ -1,0 +1,144 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:ScanSortierer.ViewModels"
+        xmlns:core="using:ScanSortierer.Core.Vorlagen"
+        x:Class="ScanSortierer.Views.VorlagenEditorFenster"
+        x:DataType="vm:VorlagenEditorViewModel"
+        Title="Scan-Sortierer · Vorlageneditor"
+        Icon="avares://ScanSortierer/Assets/scan-sortierer.ico"
+        Width="1400" Height="880" MinWidth="1000" MinHeight="600" WindowStartupLocation="CenterOwner">
+  <Grid RowDefinitions="*,Auto">
+    <Grid ColumnDefinitions="230,*,420">
+
+      <!-- Liste -->
+      <Border Background="{StaticResource PinselPanel}" BorderBrush="{StaticResource PinselRahmen}" BorderThickness="0,0,1,0">
+        <DockPanel Margin="10,14">
+          <TextBlock DockPanel.Dock="Top" Classes="kopf" Text="VORLAGEN" Margin="2,0,0,8" />
+          <Button DockPanel.Dock="Top" Content="+ Neue Vorlage" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                  Command="{Binding NeueVorlageCommand}" Margin="0,0,0,10" />
+          <ListBox Classes="navigation" ItemsSource="{Binding Liste}" SelectedItem="{Binding Auswahl}">
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="core:Vorlage">
+                <TextBlock Text="{Binding Name}" />
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </DockPanel>
+      </Border>
+
+      <!-- Bearbeitung -->
+      <ScrollViewer Grid.Column="1">
+        <StackPanel Margin="22,18" Spacing="14" IsVisible="{Binding HatVorlage}">
+          <TextBlock Text="{Binding Ueberschrift}" FontSize="20" FontWeight="SemiBold" />
+          <StackPanel>
+            <TextBlock Classes="label" Text="Name im Dropdown" />
+            <TextBox Text="{Binding Name}" MaxWidth="320" HorizontalAlignment="Left" Width="320" />
+          </StackPanel>
+          <StackPanel>
+            <TextBlock Classes="label" Text="Dateinamen-Schema" />
+            <TextBox Text="{Binding Dateiname}" Width="480" HorizontalAlignment="Left" />
+            <TextBlock Classes="leise" Margin="0,4,0,0" TextWrapping="Wrap"
+                       Text="Platzhalter: {typ} = Name der Vorlage, sonst {feldname}. Datum erscheint als JJJJ-MM-TT, Beträge nie. Fehlende optionale Felder werden weggelassen." />
+          </StackPanel>
+
+          <Border Classes="karte" ClipToBounds="True">
+            <StackPanel>
+              <Grid ColumnDefinitions="2*,1*,70,90,3*" Margin="14,10">
+                <TextBlock Classes="kopf" Text="FELD" />
+                <TextBlock Grid.Column="1" Classes="kopf" Text="TYP" />
+                <TextBlock Grid.Column="2" Classes="kopf" Text="PFLICHT" />
+                <TextBlock Grid.Column="3" Classes="kopf" Text="DATEINAME" />
+                <TextBlock Grid.Column="4" Classes="kopf" Text="ERKENNUNG" />
+              </Grid>
+              <ListBox Classes="navigation" ItemsSource="{Binding Felder}" SelectedItem="{Binding AktuellesFeld}" Margin="4,0,4,4">
+                <ListBox.ItemTemplate>
+                  <DataTemplate x:DataType="vm:FeldEditorViewModel">
+                    <Grid ColumnDefinitions="2*,1*,70,90,3*">
+                      <TextBlock Text="{Binding Anzeige}" TextTrimming="CharacterEllipsis" />
+                      <TextBlock Grid.Column="1" Text="{Binding TypAnzeige}" />
+                      <TextBlock Grid.Column="2" Text="{Binding Pflicht, Converter={x:Static vm:EditorKonverter.Haken}}" />
+                      <TextBlock Grid.Column="3" Text="{Binding ImDateinamen, Converter={x:Static vm:EditorKonverter.Haken}}" />
+                      <TextBlock Grid.Column="4" Text="{Binding ErkennungKurz}" Classes="leise" TextTrimming="CharacterEllipsis" />
+                    </Grid>
+                  </DataTemplate>
+                </ListBox.ItemTemplate>
+              </ListBox>
+            </StackPanel>
+          </Border>
+
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Button Content="+ Feld hinzufügen" Command="{Binding FeldHinzufuegenCommand}" />
+            <Button Content="▲" Command="{Binding FeldHochCommand}" ToolTip.Tip="Feld nach oben" IsEnabled="{Binding HatFeld}" />
+            <Button Content="▼" Command="{Binding FeldRunterCommand}" ToolTip.Tip="Feld nach unten" IsEnabled="{Binding HatFeld}" />
+            <Button Classes="gefahr" Content="Feld entfernen" Command="{Binding FeldEntfernenCommand}" IsEnabled="{Binding HatFeld}" />
+          </StackPanel>
+
+          <!-- Feld bearbeiten -->
+          <Border Classes="karte" Padding="16,14" IsVisible="{Binding HatFeld}">
+            <Grid ColumnDefinitions="*,20,*" RowDefinitions="Auto,Auto,Auto,Auto" DataContext="{Binding AktuellesFeld}" x:DataType="vm:FeldEditorViewModel">
+              <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,0,12">
+                <TextBlock Classes="label" Text="Bezeichnung (in der Maske)" />
+                <TextBox Text="{Binding Bezeichnung}" />
+              </StackPanel>
+              <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,12">
+                <TextBlock Classes="label" Text="Name (Platzhalter, nur Buchstaben/Ziffern/_)" />
+                <TextBox Text="{Binding Name}" />
+              </StackPanel>
+              <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,0,12">
+                <TextBlock Classes="label" Text="Typ" />
+                <ComboBox ItemsSource="{x:Static vm:FeldEditorViewModel.Typen}" SelectedItem="{Binding Typ}" />
+              </StackPanel>
+              <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,0,12" Spacing="2">
+                <CheckBox Content="Pflichtfeld" IsChecked="{Binding Pflicht}" />
+                <CheckBox Content="Im Dateinamen verwenden" IsChecked="{Binding ImDateinamen}" />
+              </StackPanel>
+              <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,0,12">
+                <TextBlock Classes="label" Text="Erkennung: Schlüsselwörter (eins pro Zeile)" />
+                <TextBox Text="{Binding SchluesselwoerterText}" AcceptsReturn="True" Height="110" TextWrapping="NoWrap" />
+              </StackPanel>
+              <StackPanel Grid.Row="2" Grid.Column="2" Margin="0,0,0,12">
+                <TextBlock Classes="label" Text="Erkennung: Muster (reguläre Ausdrücke, eins pro Zeile)" />
+                <TextBox Classes="code" Text="{Binding MusterText}" AcceptsReturn="True" Height="110" TextWrapping="NoWrap" />
+              </StackPanel>
+              <StackPanel Grid.Row="3" Grid.Column="0" IsVisible="{Binding IstAuswahl}">
+                <TextBlock Classes="label" Text="Auswahlwerte (eins pro Zeile)" />
+                <TextBox Text="{Binding WerteText}" AcceptsReturn="True" Height="110" TextWrapping="NoWrap" />
+              </StackPanel>
+            </Grid>
+          </Border>
+
+          <Grid ColumnDefinitions="*,Auto">
+            <SelectableTextBlock Text="{Binding PruefText}" TextWrapping="Wrap" VerticalAlignment="Center"
+                                 Foreground="{Binding Gueltig, Converter={x:Static vm:EditorKonverter.GueltigFarbe}}" />
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" Margin="12,0,0,0" VerticalAlignment="Top">
+              <Button Classes="gefahr" Content="Vorlage löschen" Command="{Binding LoeschenCommand}" />
+              <Button Content="Verwerfen" Command="{Binding VerwerfenCommand}" />
+              <Button Classes="primaer" Content="Speichern" Command="{Binding SpeichernCommand}" />
+            </StackPanel>
+          </Grid>
+        </StackPanel>
+      </ScrollViewer>
+
+      <!-- JSON -->
+      <DockPanel Grid.Column="2" Margin="0,18,18,18" IsVisible="{Binding HatVorlage}">
+        <TextBlock DockPanel.Dock="Top" Classes="label" Text="JSON (direkt bearbeitbar)" />
+        <Button DockPanel.Dock="Bottom" Content="JSON übernehmen" Margin="0,10,0,0" HorizontalAlignment="Right"
+                Command="{Binding JsonUebernehmenCommand}" IsEnabled="{Binding JsonBearbeitet}" />
+        <TextBox Classes="code" Text="{Binding JsonText}" AcceptsReturn="True" AcceptsTab="False" TextWrapping="NoWrap" VerticalContentAlignment="Top" />
+      </DockPanel>
+    </Grid>
+
+    <Border Grid.Row="1" Background="{StaticResource PinselLeiste}" BorderBrush="{StaticResource PinselRahmen}" BorderThickness="0,1,0,0" Padding="14,6">
+      <StackPanel>
+        <ItemsControl ItemsSource="{Binding Dateifehler}" IsVisible="{Binding HatDateifehler}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="x:String">
+              <TextBlock Classes="fehler" Text="{Binding}" TextWrapping="Wrap" />
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <TextBlock Classes="leise" Text="{Binding Pfad, StringFormat='Datei: {0}'}" />
+      </StackPanel>
+    </Border>
+  </Grid>
+</Window>

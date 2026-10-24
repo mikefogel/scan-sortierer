@@ -1,0 +1,14 @@
+{
+  "name": "Kontoauszug",
+  "dateiname": "{datum}_{absender}_{typ}_{nummer}",
+  "ablage": "flach",
+  "felder": [
+    { "name": "absender", "bezeichnung": "Bank", "typ": "auswahl", "pflicht": true, "imDateinamen": true },
+    { "name": "datum", "bezeichnung": "Briefdatum", "typ": "datum", "pflicht": true, "imDateinamen": true,
+      "schluesselwoerter": ["Auszugsdatum", "Erstellt am", "Datum"] },
+    { "name": "nummer", "bezeichnung": "Auszugsnummer", "typ": "text", "pflicht": false, "imDateinamen": true,
+      "schluesselwoerter": ["Kontoauszug Nr.", "Auszug Nr.", "Auszugsnummer"] },
+    { "name": "iban", "bezeichnung": "IBAN", "typ": "text", "pflicht": false, "imDateinamen": false,
+      "muster": ["\\b(DE\\d{2}(?: ?\\d{4}){4} ?\\d{2})\\b"] }
+  ]
+}

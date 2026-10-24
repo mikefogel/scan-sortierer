@@ -1,0 +1,13 @@
+{
+  "name": "Vertrag",
+  "dateiname": "{datum}_{absender}_{typ}",
+  "ablage": "flach",
+  "felder": [
+    { "name": "absender", "bezeichnung": "Absender", "typ": "auswahl", "pflicht": true, "imDateinamen": true },
+    { "name": "datum", "bezeichnung": "Briefdatum", "typ": "datum", "pflicht": true, "imDateinamen": true },
+    { "name": "vertragsnummer", "bezeichnung": "Vertragsnummer", "typ": "text", "pflicht": false, "imDateinamen": false,
+      "schluesselwoerter": ["Vertragsnummer", "Vertragsnr.", "Vertrags-Nr.", "Kundennummer"] },
+    { "name": "betreff", "bezeichnung": "Betreff", "typ": "text", "pflicht": false, "imDateinamen": false,
+      "schluesselwoerter": ["Betreff", "Betr."] }
+  ]
+}

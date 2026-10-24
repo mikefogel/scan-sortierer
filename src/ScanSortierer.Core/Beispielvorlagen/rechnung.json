@@ -1,0 +1,14 @@
+{
+  "name": "Rechnung",
+  "dateiname": "{datum}_{absender}_{typ}",
+  "ablage": "flach",
+  "felder": [
+    { "name": "absender", "bezeichnung": "Absender", "typ": "auswahl", "pflicht": true, "imDateinamen": true },
+    { "name": "datum", "bezeichnung": "Briefdatum", "typ": "datum", "pflicht": true, "imDateinamen": true,
+      "schluesselwoerter": ["Rechnungsdatum", "Datum"] },
+    { "name": "betrag", "bezeichnung": "Betrag", "typ": "betrag", "pflicht": true, "imDateinamen": false,
+      "schluesselwoerter": ["Rechnungsbetrag", "Gesamtbetrag", "Endbetrag", "zu zahlen", "Gesamt", "Summe"] },
+    { "name": "rechnungsnummer", "bezeichnung": "Rechnungsnummer", "typ": "text", "pflicht": true, "imDateinamen": false,
+      "schluesselwoerter": ["Rechnungsnummer", "Rechnungsnr.", "Rechnungs-Nr.", "Rechnung Nr.", "Belegnummer"] }
+  ]
+}

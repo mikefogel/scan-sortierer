@@ -1,0 +1,195 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ScanSortierer.App"
+             RequestedThemeVariant="Dark">
+  <Application.Resources>
+    <ResourceDictionary>
+      <Color x:Key="FarbeFenster">#1E2026</Color>
+      <Color x:Key="FarbePanel">#23262D</Color>
+      <Color x:Key="FarbeLeiste">#181A1F</Color>
+      <Color x:Key="FarbeFeld">#16181C</Color>
+      <Color x:Key="FarbeRahmen">#353A43</Color>
+      <Color x:Key="FarbeText">#E6E8EB</Color>
+      <Color x:Key="FarbeTextLeise">#8B919A</Color>
+      <Color x:Key="FarbeAkzent">#3B82F6</Color>
+      <Color x:Key="FarbeGefahr">#E5484D</Color>
+      <Color x:Key="FarbeWarnung">#F5C542</Color>
+      <Color x:Key="FarbeOk">#4CC38A</Color>
+
+      <SolidColorBrush x:Key="PinselFenster" Color="{StaticResource FarbeFenster}" />
+      <SolidColorBrush x:Key="PinselPanel" Color="{StaticResource FarbePanel}" />
+      <SolidColorBrush x:Key="PinselLeiste" Color="{StaticResource FarbeLeiste}" />
+      <SolidColorBrush x:Key="PinselFeld" Color="{StaticResource FarbeFeld}" />
+      <SolidColorBrush x:Key="PinselRahmen" Color="{StaticResource FarbeRahmen}" />
+      <SolidColorBrush x:Key="PinselText" Color="{StaticResource FarbeText}" />
+      <SolidColorBrush x:Key="PinselTextLeise" Color="{StaticResource FarbeTextLeise}" />
+      <SolidColorBrush x:Key="PinselAkzent" Color="{StaticResource FarbeAkzent}" />
+      <SolidColorBrush x:Key="PinselGefahr" Color="{StaticResource FarbeGefahr}" />
+      <SolidColorBrush x:Key="PinselWarnung" Color="{StaticResource FarbeWarnung}" />
+      <SolidColorBrush x:Key="PinselOk" Color="{StaticResource FarbeOk}" />
+    </ResourceDictionary>
+  </Application.Resources>
+
+  <Application.Styles>
+    <FluentTheme />
+
+    <Style Selector="Window">
+      <Setter Property="Background" Value="{StaticResource PinselFenster}" />
+      <Setter Property="Foreground" Value="{StaticResource PinselText}" />
+      <Setter Property="FontSize" Value="13.5" />
+    </Style>
+
+    <!-- Abschnittsüberschriften wie „DATEIEN“ -->
+    <Style Selector="TextBlock.kopf">
+      <Setter Property="FontSize" Value="11.5" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="LetterSpacing" Value="0.6" />
+      <Setter Property="Foreground" Value="{StaticResource PinselTextLeise}" />
+    </Style>
+    <Style Selector="TextBlock.titel">
+      <Setter Property="FontSize" Value="15" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="TextBlock.leise">
+      <Setter Property="Foreground" Value="{StaticResource PinselTextLeise}" />
+      <Setter Property="FontSize" Value="12" />
+    </Style>
+    <Style Selector="TextBlock.label">
+      <Setter Property="Foreground" Value="{StaticResource PinselTextLeise}" />
+      <Setter Property="FontSize" Value="12.5" />
+      <Setter Property="Margin" Value="0,0,0,5" />
+    </Style>
+    <Style Selector="TextBlock.erkannt">
+      <Setter Property="Foreground" Value="{StaticResource PinselOk}" />
+      <Setter Property="FontSize" Value="11.5" />
+    </Style>
+    <Style Selector="TextBlock.fehler">
+      <Setter Property="Foreground" Value="{StaticResource PinselGefahr}" />
+      <Setter Property="FontSize" Value="12" />
+    </Style>
+
+    <!-- Schaltflächen -->
+    <Style Selector="Button">
+      <Setter Property="Background" Value="#2C3038" />
+      <Setter Property="BorderBrush" Value="{StaticResource PinselRahmen}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Padding" Value="12,7" />
+    </Style>
+    <Style Selector="Button.primaer">
+      <Setter Property="Background" Value="{StaticResource PinselAkzent}" />
+      <Setter Property="BorderBrush" Value="{StaticResource PinselAkzent}" />
+      <Setter Property="Foreground" Value="White" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="Button.primaer:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#5592F7" />
+      <Setter Property="Foreground" Value="White" />
+    </Style>
+    <Style Selector="Button.gefahr">
+      <Setter Property="Background" Value="#3A1F24" />
+      <Setter Property="BorderBrush" Value="#6B2D35" />
+      <Setter Property="Foreground" Value="#F2A0A6" />
+    </Style>
+    <Style Selector="Button.link">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Padding" Value="2,0" />
+      <Setter Property="Foreground" Value="{StaticResource PinselText}" />
+    </Style>
+    <Style Selector="Button.link /template/ ContentPresenter">
+      <Setter Property="TextBlock.TextDecorations" Value="Underline" />
+    </Style>
+
+    <!-- Eingabefelder -->
+    <Style Selector="TextBox">
+      <Setter Property="Background" Value="{StaticResource PinselFeld}" />
+      <Setter Property="BorderBrush" Value="{StaticResource PinselRahmen}" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Padding" Value="10,7" />
+    </Style>
+    <Style Selector="TextBox.erkannt">
+      <Setter Property="BorderBrush" Value="#3E7D5F" />
+    </Style>
+    <Style Selector="TextBox.fehler">
+      <Setter Property="BorderBrush" Value="{StaticResource PinselGefahr}" />
+    </Style>
+    <Style Selector="TextBox.code">
+      <Setter Property="FontFamily" Value="Cascadia Mono,Consolas,DejaVu Sans Mono,Liberation Mono,monospace" />
+      <Setter Property="FontSize" Value="12.5" />
+    </Style>
+    <Style Selector="ComboBox">
+      <Setter Property="Background" Value="{StaticResource PinselFeld}" />
+      <Setter Property="BorderBrush" Value="{StaticResource PinselRahmen}" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+    </Style>
+    <Style Selector="ComboBox.erkannt">
+      <Setter Property="BorderBrush" Value="#3E7D5F" />
+    </Style>
+    <Style Selector="ComboBox.fehler">
+      <Setter Property="BorderBrush" Value="{StaticResource PinselGefahr}" />
+    </Style>
+
+    <!-- Seitenvorschau -->
+    <Style Selector="Border.seite">
+      <Setter Property="Background" Value="#F4F4EF" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="3" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="BoxShadow" Value="0 2 8 0 #66000000" />
+    </Style>
+    <Style Selector="Border.seite.ausgewaehlt">
+      <Setter Property="BorderBrush" Value="{StaticResource PinselAkzent}" />
+    </Style>
+    <Style Selector="Border.seite.fokus">
+      <Setter Property="BoxShadow" Value="0 0 0 2 #88E6E8EB" />
+    </Style>
+    <Style Selector="Border.seite.leer">
+      <Setter Property="Opacity" Value="0.55" />
+    </Style>
+
+    <!-- Dateiliste -->
+    <Style Selector="ListBox.dateien">
+      <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="ListBox.dateien ListBoxItem">
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Padding" Value="10,7" />
+      <Setter Property="Margin" Value="0,1" />
+    </Style>
+    <Style Selector="ListBox.dateien ListBoxItem:selected /template/ ContentPresenter">
+      <Setter Property="Background" Value="#2D3B55" />
+    </Style>
+    <Style Selector="ListBox.navigation">
+      <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="ListBox.navigation ListBoxItem">
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Padding" Value="10,8" />
+      <Setter Property="Margin" Value="0,1" />
+    </Style>
+    <Style Selector="ListBox.navigation ListBoxItem:selected /template/ ContentPresenter">
+      <Setter Property="Background" Value="#2D3B55" />
+    </Style>
+
+    <Style Selector="Border.karte">
+      <Setter Property="Background" Value="{StaticResource PinselPanel}" />
+      <Setter Property="BorderBrush" Value="{StaticResource PinselRahmen}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="8" />
+    </Style>
+    <Style Selector="Border.abzeichen">
+      <Setter Property="Background" Value="#3D3315" />
+      <Setter Property="CornerRadius" Value="12" />
+      <Setter Property="Padding" Value="10,4" />
+    </Style>
+    <Style Selector="Border.hinweis">
+      <Setter Property="Background" Value="#33291A" />
+      <Setter Property="BorderBrush" Value="#6B5520" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Padding" Value="10,6" />
+    </Style>
+  </Application.Styles>
+</Application>
