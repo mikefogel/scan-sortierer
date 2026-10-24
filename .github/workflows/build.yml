@@ -146,6 +146,7 @@ jobs:
       - uses: actions/download-artifact@v8
         with:
           path: pakete
+          pattern: '*-x64'
           merge-multiple: true
 
       - name: Prüfsummen
