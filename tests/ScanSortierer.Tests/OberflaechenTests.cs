@@ -1,5 +1,7 @@
 #pragma warning disable CS0618 // Bitmap.Save(string): einfache Bildschirmfotos genügen
 using Avalonia;
+using Avalonia.Controls;
+using Avalonia.VisualTree;
 using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
 using Avalonia.Threading;
@@ -135,8 +137,14 @@ public class OberflaechenTests
         await WarteAuf(() => vm.AktuelleDatei?.Name == "Scan 001.pdf" && vm.Seiten.All(s => s.Vorschau != null));
         Assert.Contains(vm.Hinweise, h => h.Contains("abgeschaltet"));
 
-        // Ohne OCR: Felder von Hand.
-        vm.Felder.First(f => f.Name == "absender").Wert = "Telekom";
+        // Ohne OCR: Felder von Hand. Den Absender wirklich in die editierbare Auswahl tippen.
+        var auswahl = fenster.GetVisualDescendants().OfType<ComboBox>()
+            .First(c => c.IsEditable && c.DataContext is FeldViewModel { Name: "absender" });
+        var eingabe = auswahl.GetVisualDescendants().OfType<TextBox>().First();
+        eingabe.Focus();
+        fenster.KeyTextInput("Telekom");
+        Dispatcher.UIThread.RunJobs();
+        Assert.Equal("Telekom", vm.Felder.First(f => f.Name == "absender").Wert);
         vm.Felder.First(f => f.Name == "datum").Wert = "14.10.26";
         vm.Felder.First(f => f.Name == "betrag").Wert = "49,9";
         vm.Felder.First(f => f.Name == "rechnungsnummer").Wert = "4711";

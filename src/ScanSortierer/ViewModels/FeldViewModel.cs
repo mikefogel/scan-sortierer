@@ -29,8 +29,18 @@ public sealed partial class FeldViewModel : ObservableObject
         _ => Feld.Pflicht ? "Pflichtfeld" : "",
     };
 
-    [ObservableProperty]
-    public partial string Wert { get; set; } = "";
+    private string _wert = "";
+
+    /// <summary>Eingabewert (nie null, auch wenn ein Steuerelement null zurückschreibt).</summary>
+    public string Wert
+    {
+        get => _wert;
+        set
+        {
+            if (SetProperty(ref _wert, value ?? ""))
+                OnWertChanged(_wert);
+        }
+    }
 
     /// <summary>Wert wurde per Texterkennung vorbelegt.</summary>
     [ObservableProperty]
@@ -53,7 +63,7 @@ public sealed partial class FeldViewModel : ObservableObject
 
     public event EventHandler? WertGeaendert;
 
-    partial void OnWertChanged(string value)
+    private void OnWertChanged(string value)
     {
         if (!_setztIntern)
         {
